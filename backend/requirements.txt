@@ -45,3 +45,7 @@ pytest==8.4.1
 pytest-asyncio==1.1.0
 pandas 
 scikit-learn
+
+
+# Reasoning Models 
+langchain-groq

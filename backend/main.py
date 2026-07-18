@@ -19,13 +19,12 @@ from llm_response import generate_response_from_llm
 from auth import hash_password , create_access_token , verify_password
 from jose import JWTError, jwt
 from fastapi.security import OAuth2PasswordBearer
+from dotenv import load_dotenv
+import os
+load_dotenv()
 
-
-SECRET_KEY = "secret_key_123"
-
-ALGORITHM = "HS256"
-
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl = 'login')
 
@@ -157,23 +156,23 @@ async def get_pdf(pdf: UploadFile = File(...)):
     
     chunks = chunking_the_file(cleaned_content)
     for index , chunk in enumerate(chunks):
-        print('-'*60)
-        print(f" Chunk number -> {index + 1}")
-        print(f" Chunk Metadat -> {chunk.metadata}")
-        print(chunk.page_content)
-        print(f'Total Words -> {len(chunk.page_content)}')
-        print(f'Total Characters -> {len(chunk.page_content.split())}')
+        # print('-'*60)
+        # print(f" Chunk number -> {index + 1}")
+        # print(f" Chunk Metadat -> {chunk.metadata}")
+        # print(chunk.page_content)
+        # print(f'Total Words -> {len(chunk.page_content)}')
+        # print(f'Total Characters -> {len(chunk.page_content.split())}')
         
         # Getting Embeddings for the File 
         embeddings = generate_embeddings(chunk.page_content)
     
     
-    results.append({
-        'Source' : pdf.filename ,
-        'Content' : chunk.page_content ,
-        'embeddings' : embeddings
-    })
-    
+        results.append({
+            'Source' : pdf.filename ,
+            'Content' : chunk.page_content ,
+            'embeddings' : embeddings
+        })
+    print(" Done with generating the dataset ")
     df = pd.DataFrame(results)
     
     print(" Saving the CSV file to Dataset Folder ")
@@ -225,20 +224,23 @@ async def pdf_chatbot(text : QueryRequest):
     user_query = text.query
     
     query_embedding = np.array(generate_embeddings(user_query)).reshape(1 , -1)
+    print(len(query_embedding[0]))
     
     # Loading the Dataset 
-    dataset = pd.read_csv(f'{DATASET_FOLDER_NAME}/AIdevRoadmap.pdf.csv')
+    dataset = pd.read_csv(f'{DATASET_FOLDER_NAME}/MongoDB.pdf.csv')
     # Convert stringified embeddings back into actual lists of floats
     dataset['embeddings'] = dataset['embeddings'].apply(ast.literal_eval)
 
     # Stack into a proper 2D numpy array (num_chunks x embedding_dim)
     chunks_embeddings = np.vstack(dataset['embeddings'].to_numpy())
+    print(len(chunks_embeddings[0]))
     
     similarities = cosine_similarity(chunks_embeddings, query_embedding)[0]
     
     # Filename :- ReactJSNotesForProfessionals.pdf
     relevant_chunks = get_top_k_chunks(similarities , dataset)
-    
+    print(relevant_chunks)
+    print(type(relevant_chunks))
     response = generate_response_from_llm(relevant_chunks , user_query)
     print(response)
     return {

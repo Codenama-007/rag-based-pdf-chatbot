@@ -2,6 +2,7 @@
 frontend/node_modules/
 frontend/dist/
 frontend/.env
+frontend/.vscode/mcp.json
 
 
 
@@ -11,6 +12,7 @@ backend/__pycache__/
 backend/*.pyc
 backend/.env
 backend/dataset/
+frontend/.vscode/mcp.json
 
 
 # Vector databases (if generated)
@@ -28,3 +30,5 @@ backend/uploads/
 # OS
 .DS_Store
 Thumbs.db
+
+te

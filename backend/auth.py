@@ -1,12 +1,16 @@
 from datetime import datetime, timedelta, timezone
 from jose import jwt
 from pwdlib import PasswordHash
+from dotenv import load_dotenv
+import os
+
+load_dotenv
 
 password_hash = PasswordHash.recommended()
 
-SECRET_KEY = "secret_key_123"
+SECRET_KEY = os.getenv("SECRET_KEY")
 
-ALGORITHM = "HS256"
+ALGORITHM = os.getenv("ALGORITHM")
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 

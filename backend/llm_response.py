@@ -1,19 +1,62 @@
-from langchain_ollama import ChatOllama
+import os
+from dotenv import load_dotenv
 
-llm = ChatOllama(
-    model = 'phi4-mini-reasoning:latest' ,
-    temperature = 0  
+from langchain_groq import ChatGroq
+from langchain_core.prompts import ChatPromptTemplate
+
+load_dotenv()
+
+llm = ChatGroq(
+    groq_api_key=os.getenv("GROQ_API_KEY"),
+    model=os.getenv("GROQ_MODEL"),
+    temperature=0,
 )
 
-def generate_response_from_llm(top_chunks , user_query):
-    
-    prompt = f''' User has just provided us with the PDFs .
-    just explain the content your response should not look like you are thinking but it should be more like a good explaination
-    here are the top relevant chunks {top_chunks} and here is the User Query {user_query} 
-    so now do the reasoning based on what chunks i have provided to you .
-    when you will be doing the reasoning Tasks remeber that you dont mention what chunks just refer those chunks and explain the user query 
-    '''
-    
-    Content = llm.invoke(prompt)
-    
-    return Content.content
+prompt_template = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            """
+You are a helpful AI assistant for a PDF chatbot.
+
+Rules:
+- Answer ONLY using the provided document context.
+- Do not invent information.
+- If the answer is not present in the context, say:
+  "I couldn't find that information in the uploaded document."
+- Never mention chunk numbers or internal retrieval.
+- Explain concepts clearly and naturally.
+- Use bullet points whenever appropriate.
+""",
+        ),
+        (
+            "human",
+            """
+Context:
+{context}
+
+User Question:
+{question}
+""",
+        ),
+    ]
+)
+
+
+def generate_response_from_llm(top_chunks, user_query):
+
+    if isinstance(top_chunks, list):
+        context = "\n\n".join(
+    chunk["chunks"] for chunk in top_chunks
+)
+    else:
+        context = str(top_chunks)
+
+    prompt = prompt_template.format_messages(
+        context=context,
+        question=user_query,
+    )
+
+    response = llm.invoke(prompt)
+
+    return response.content

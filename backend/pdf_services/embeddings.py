@@ -1,9 +1,10 @@
-import ollama 
+from models.get_model import embedding_model
 
-def generate_embeddings(content):
-    embedding = ollama.embed(
-        model = 'bge-m3:latest' ,
-        input = content
-    )['embeddings']
-    
-    return embedding
+def generate_embeddings(text: str):
+
+    embedding = embedding_model.encode(
+        text,
+        normalize_embeddings=True
+    )
+
+    return embedding.tolist()
