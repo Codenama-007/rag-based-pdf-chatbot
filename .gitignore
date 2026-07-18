@@ -1,0 +1,30 @@
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+
+
+
+# Backend
+backend/venv/
+backend/__pycache__/
+backend/*.pyc
+backend/.env
+backend/dataset/
+
+
+# Vector databases (if generated)
+backend/chroma_db/
+backend/qdrant_data/
+backend/users.db
+
+# Uploaded PDFs
+backend/uploads/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

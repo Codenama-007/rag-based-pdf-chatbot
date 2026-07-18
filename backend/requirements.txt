@@ -1,0 +1,47 @@
+# FastAPI
+fastapi==0.116.1
+uvicorn[standard]==0.35.0
+python-multipart==0.0.20
+
+# Validation & Settings
+pydantic==2.11.7
+pydantic-settings==2.10.1
+
+# Database
+sqlalchemy==2.0.41
+psycopg[binary]==3.2.9
+alembic==1.16.4
+
+# PDF Processing
+pymupdf==1.26.3
+pymupdf4llm
+
+# AI / RAG
+langchain==0.3.27
+lanchain-ollama
+langchain-community==0.3.27
+langchain-text-splitters==0.3.9
+
+# Embeddings
+sentence-transformers==5.0.0
+
+# Vector Database
+faiss-cpu==1.11.0.post1
+
+ollama == 0.5.1
+
+
+# Utilities
+numpy==2.3.1
+python-dotenv==1.1.1
+httpx==0.28.1
+orjson==3.11.0
+
+# Logging
+loguru==0.7.3
+
+# Testing
+pytest==8.4.1
+pytest-asyncio==1.1.0
+pandas 
+scikit-learn

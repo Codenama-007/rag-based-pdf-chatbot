@@ -1,0 +1,9 @@
+from sqlalchemy import String , Integer , Column
+from Database import base
+
+class Users(base):
+    __tablename__ = 'users'
+    id = Column(Integer , primary_key = True , index = True)
+    username = Column(String , index = True)
+    email = Column(String , unique = True , index = True)
+    password = Column(String)
