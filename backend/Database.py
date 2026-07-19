@@ -10,7 +10,7 @@ load_dotenv()
 sqlalchemy_database_url = os.getenv("DATABASE_URL")
 
 engine = create_engine(
-    sqlalchemy_database_url , connect_args = {"check_same_thread" : False}
+    sqlalchemy_database_url 
 )
 
 sessionlocal = sessionmaker(autocommit = False , autoflush = False , bind = engine)

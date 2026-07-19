@@ -46,6 +46,9 @@ pytest-asyncio==1.1.0
 pandas 
 scikit-learn
 
+# Added Later on 
+boto3 
+pgvector
 
 # Reasoning Models 
 langchain-groq

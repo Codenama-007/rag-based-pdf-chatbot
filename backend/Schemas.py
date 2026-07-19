@@ -11,3 +11,4 @@ class User_Create(BaseModel):
     
 class QueryRequest(BaseModel):
     query: str
+    document_id: int

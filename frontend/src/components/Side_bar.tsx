@@ -10,8 +10,10 @@ import {
 } from "./ui/sidebar";
 import { useEffect , useState} from "react";
 import { File, LogOut, User, Video } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Side_bar = () => {
+  const navigate = useNavigate()
   const [username, setusername] = useState("")
   useEffect(() => {
     const getProfile = async () => {
@@ -28,6 +30,10 @@ const Side_bar = () => {
 
         // console.log(data.username);
         setusername(data.username)
+
+        if (! username) {
+          navigate('/')
+        }
     };
 
     getProfile();
