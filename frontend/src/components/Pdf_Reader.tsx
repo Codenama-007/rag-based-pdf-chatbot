@@ -4,14 +4,18 @@ import { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown'
 
 const Pdf_Reader = () => {
-  const [file, setFile] = useState(null)
+  type Message = {
+    role: 'user' | 'assistant' | 'error'
+    content: string
+  }
+  const [file, setFile] = useState<File | null>(null)
   const [disabled, setDisabled] = useState(false)
   const [disabledChat, setDisabledChat] = useState(true)
   const [query, setQuery] = useState("")
-  const [messages, setMessages] = useState([]) // { role: 'user' | 'assistant' | 'error', content: string }
+  const [messages, setMessages] = useState<Message[]>([])
   const [sending, setSending] = useState(false)
-  const scrollRef = useRef(null)
-  const [documentId, setDocumentId] = useState(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const [documentId, setDocumentId] = useState<number | null>(null)
   // const token = localStorage.getItem("token");
 
   // Auto-scroll to the latest message whenever the list changes
@@ -66,12 +70,14 @@ const Pdf_Reader = () => {
     setSending(true)
 
     try {
+      const token = localStorage.getItem("token")
       const response = await fetch("http://127.0.0.1:8000/pdf-chat", {
         method: "POST",
         headers: {
-          "Content-type": "application/json"
+          "Content-type": "application/json",
+          Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({ query: userMessage })
+        body: JSON.stringify({ query: userMessage, document_id: documentId })
       })
 
       const data = await response.json()
@@ -88,7 +94,7 @@ const Pdf_Reader = () => {
       setSending(false)
     }
   }
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !disabledChat && !sending) {
       chat_with_pdf()
     }
@@ -162,8 +168,12 @@ const Pdf_Reader = () => {
             <input
               type="file"
               accept='.pdf'
-              onChange={(e) => { setFile(e.target.files[0]) }}
-              className='flex-1 shadow-md p-3 sm:p-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm'
+              onChange={(e) => {
+                if (e.target.files && e.target.files[0]) {
+                  setFile(e.target.files[0])
+                }
+              }}
+              className='...'
             />
             <Button
               className='w-full sm:w-auto px-6 sm:px-8 py-2 sm:py-2 rounded-lg hover:bg-white hover:text-black shadow-md bg-blue-600 text-white font-semibold transition-colors disabled:opacity-50'

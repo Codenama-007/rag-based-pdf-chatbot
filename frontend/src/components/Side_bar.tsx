@@ -9,10 +9,12 @@ import {
   SidebarMenuItem
 } from "./ui/sidebar";
 import { useEffect, useState } from "react";
-import { File, LogOut, User, Video } from "lucide-react";
+import { File, LogOut, User} from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const Side_bar = () => {
+  
   const navigate = useNavigate()
   const [username, setusername] = useState("")
 
@@ -36,17 +38,18 @@ const Side_bar = () => {
 
     getProfile();
   }, []);
+  const handleLogout = () => {
+  localStorage.removeItem("token")
+  toast.info("successfully Logout " , {position : "bottom-center"})
+  
+  navigate('/')
+}
   const tools = [
     {
       title: "PDF Chat",
       url: "/main",
       icon: <File size={20} />,
-    },
-    {
-      title: "Video Summarizer",
-      url: "/video-summary",
-      icon: <Video size={20} />,
-    },
+    }
   ];
 
   return (
@@ -92,11 +95,9 @@ const Side_bar = () => {
           </SidebarMenuItem>
 
           <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <Link to="/logout">
-                <LogOut size={20} />
-                <span>Logout</span>
-              </Link>
+            <SidebarMenuButton onClick={handleLogout}>
+              <LogOut size={20} />
+              <span>Logout</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
