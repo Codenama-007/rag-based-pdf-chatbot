@@ -20,7 +20,7 @@ const Register = () => {
 
     const register_function = async(e :React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        console.log(Data)
+        // console.log(Data)
         const response = await fetch('http://127.0.0.1:8000/register' , {
             method : "POST" ,
             headers : {

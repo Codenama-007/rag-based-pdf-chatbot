@@ -18,7 +18,7 @@ const Login = () => {
     const login_function = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         console.log(" Login Button Was Clicked ")
-        console.log(Data)
+        // console.log(Data)
         const response = await fetch('http://127.0.0.1:8000/login', {
             method: "POST",
             headers: {
