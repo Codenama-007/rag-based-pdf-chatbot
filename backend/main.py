@@ -139,106 +139,45 @@ async def register(user : User_Create , db: Session = Depends(get_data_base)):
 
 
 # generated from the claude side 
-@app.post("/get-pdf")
-async def get_pdf(
-    pdf: UploadFile = File(...),
+@app.post("/pdf-chat")
+async def pdf_chatbot(
+    text: QueryRequest,
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_data_base),
 ):
     payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
     user = db.query(Users).filter(Users.email == payload.get("sub")).first()
 
-    file_bytes = await pdf.read()
-    storage_key = f"{user.id}/{pdf.filename}"
-    upload_file_to_storage(file_bytes, storage_key)
+    # Make sure this document actually belongs to the logged-in user
+    document = db.query(Documents).filter(
+        Documents.id == text.document_id,
+        Documents.user_id == user.id
+    ).first()
 
-    # pymupdf4llm needs a real file path, so write a temp copy
-    with tempfile.NamedTemporaryFile(suffix=".pdf") as tmp:
-        tmp.write(file_bytes)
-        tmp.flush()
-        pdf_content = llm.to_markdown(tmp.name)
+    if document is None:
+        raise HTTPException(status_code=404, detail="Document not found")
 
-    cleaned_content = cleaning_of_the_document(pdf_content)
-    chunks = chunking_the_file(cleaned_content)
+    query_embedding = generate_embeddings(text.query)
 
-    # 1. Create the Documents row first
-    new_document = Documents(
-        user_id=user.id,
-        filename=pdf.filename,
-        storage_key=storage_key,
+    # pgvector ranks chunks by cosine distance directly in the DB query
+    top_chunks = (
+        db.query(DocumentChunks)
+        .filter(DocumentChunks.document_id == document.id)
+        .order_by(DocumentChunks.embedding.cosine_distance(query_embedding))
+        .limit(7)
+        .all()
     )
-    db.add(new_document)
-    db.commit()
-    db.refresh(new_document)  # so new_document.id is populated
 
-    # 2. Create one DocumentChunks row per chunk
-    for chunk in chunks:
-        embedding = generate_embeddings(chunk.page_content)
-        db_chunk = DocumentChunks(
-            document_id=new_document.id,
-            content=chunk.page_content,
-            embedding=embedding,
-        )
-        db.add(db_chunk)
-
-    db.commit()
+    relevant_chunks = [{"chunks": chunk.content} for chunk in top_chunks]
+    response = generate_response_from_llm(relevant_chunks, text.query)
 
     return {
         "status_code": 200,
-        "message": "File uploaded and indexed",
-        "document_id": new_document.id,
+        "response_from_llm": response,
+        "message": "Request Reached the Backend Successfully"
     }
-# @app.post("/get-pdf")
-# async def get_pdf(pdf: UploadFile = File(...),
-#     token: str = Depends(oauth2_scheme),
-#     db: Session = Depends(get_data_base),):
-#     print(pdf.filename)
-#     file = pdf.file
-#     file_name = pdf.filename
-    
-
-#     with open(f"{FOLDER_NAME}/{file_name}" , 'wb') as file:
-#         file.write(await pdf.read()) 
-        
-#     results = []
-    
-#     # Extracting the Content Related to the Document 
-#     pdf_content = llm.to_markdown(f'{FOLDER_NAME}/{file_name}')
-    
-#     # Cleaning the content of pdf file 
-    
-#     cleaned_content = cleaning_of_the_document(pdf_content)
-    
-#     # Extracting the chunks from the cleaned content
-    
-#     chunks = chunking_the_file(cleaned_content)
-#     for index , chunk in enumerate(chunks):
-#         # print('-'*60)
-#         # print(f" Chunk number -> {index + 1}")
-#         # print(f" Chunk Metadat -> {chunk.metadata}")
-#         # print(chunk.page_content)
-#         # print(f'Total Words -> {len(chunk.page_content)}')
-#         # print(f'Total Characters -> {len(chunk.page_content.split())}')
-        
-#         # Getting Embeddings for the File 
-#         embeddings = generate_embeddings(chunk.page_content)
     
     
-#         results.append({
-#             'Source' : pdf.filename ,
-#             'Content' : chunk.page_content ,
-#             'embeddings' : embeddings
-#         })
-#     print(" Done with generating the dataset ")
-#     df = pd.DataFrame(results)
-    
-#     print(" Saving the CSV file to Dataset Folder ")
-#     df.to_csv(f"{DATASET_FOLDER_NAME}/{pdf.filename}.csv" , index = False)
-#     print(" File Successfully saved to CSV data frame ")
-#     return {
-#         "status_code": 200,
-#         "message": "File Reached the Backend Successfully and svaed to uploads folder currently its getting cleaned"
-#     }
     
 # Endpoint for getting the Profile Credentials 
 @app.get("/profile")

@@ -11,6 +11,7 @@ const Pdf_Reader = () => {
   const [messages, setMessages] = useState([]) // { role: 'user' | 'assistant' | 'error', content: string }
   const [sending, setSending] = useState(false)
   const scrollRef = useRef(null)
+  const [documentId, setDocumentId] = useState(null)
   // const token = localStorage.getItem("token");
 
   // Auto-scroll to the latest message whenever the list changes
@@ -28,16 +29,21 @@ const Pdf_Reader = () => {
 
     setDisabled(true)
     try {
+      const token = localStorage.getItem("token")
       const form_data = new FormData()
       form_data.append("pdf", file)
       const response = await fetch("http://127.0.0.1:8000/get-pdf", {
         method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
         body: form_data
       })
       const data = await response.json()
       console.log(data.message)
       if (data.status_code == 200) {
         setDisabledChat(false)
+        setDocumentId(data.document_id)
       } else {
         setMessages(prev => [...prev, { role: 'error', content: 'Failed to process the PDF. Please try again.' }])
       }
@@ -55,7 +61,6 @@ const Pdf_Reader = () => {
     }
 
     const userMessage = query
-    // Show the user's message immediately, then clear the input
     setMessages(prev => [...prev, { role: 'user', content: userMessage }])
     setQuery("")
     setSending(true)
@@ -83,7 +88,6 @@ const Pdf_Reader = () => {
       setSending(false)
     }
   }
-
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !disabledChat && !sending) {
       chat_with_pdf()
@@ -123,11 +127,10 @@ const Pdf_Reader = () => {
             return (
               <div key={index} className={`w-full flex ${isUser ? 'justify-end' : 'justify-start'}`}>
                 <div
-                  className={`max-w-[85%] sm:max-w-[70%] rounded-2xl px-4 py-2 sm:py-3 shadow-sm break-words ${
-                    isUser
-                      ? 'bg-blue-600 text-white rounded-br-sm'
-                      : 'bg-gray-100 text-gray-800 border border-gray-200 rounded-bl-sm'
-                  }`}
+                  className={`max-w-[85%] sm:max-w-[70%] rounded-2xl px-4 py-2 sm:py-3 shadow-sm break-words ${isUser
+                    ? 'bg-blue-600 text-white rounded-br-sm'
+                    : 'bg-gray-100 text-gray-800 border border-gray-200 rounded-bl-sm'
+                    }`}
                 >
                   <ReactMarkdown>
                     {msg.content}

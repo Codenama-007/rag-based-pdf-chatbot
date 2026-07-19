@@ -8,36 +8,34 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from "./ui/sidebar";
-import { useEffect , useState} from "react";
+import { useEffect, useState } from "react";
 import { File, LogOut, User, Video } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Side_bar = () => {
   const navigate = useNavigate()
   const [username, setusername] = useState("")
+
+  // modified by claude 
   useEffect(() => {
     const getProfile = async () => {
-        const token = localStorage.getItem("token");
+      const token = localStorage.getItem("token");
+      const response = await fetch("http://127.0.0.1:8000/profile", {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-        const response = await fetch("http://127.0.0.1:8000/profile", {
-            method: "GET",
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
+      if (!response.ok) {
+        navigate('/');
+        return;
+      }
 
-        const data = await response.json();
-
-        // console.log(data.username);
-        setusername(data.username)
-
-        if (! username) {
-          navigate('/')
-        }
+      const data = await response.json();
+      setusername(data.username);
     };
 
     getProfile();
-}, []);
+  }, []);
   const tools = [
     {
       title: "PDF Chat",
