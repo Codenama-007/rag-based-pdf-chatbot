@@ -1,11 +1,11 @@
+# Backend Dependencies for Production grade
 # FastAPI
 fastapi==0.116.1
 uvicorn[standard]==0.35.0
 python-multipart==0.0.20
 
-# Validation & Settings
+# Validation
 pydantic==2.11.7
-pydantic-settings==2.10.1
 
 # Database
 sqlalchemy==2.0.41
@@ -21,8 +21,6 @@ pymupdf==1.26.3
 pymupdf4llm
 
 # AI / RAG
-langchain==0.3.27
-langchain-community==0.3.27
 langchain-text-splitters==0.3.9
 langchain-groq
 
@@ -35,8 +33,47 @@ boto3
 # Utilities
 numpy==2.3.1
 python-dotenv==1.1.1
-httpx==0.28.1
-orjson==3.11.0
 
-# Logging
-loguru==0.7.3
+
+# FastAPI dependencies for testing purpose 
+# fastapi==0.116.1
+# uvicorn[standard]==0.35.0
+# python-multipart==0.0.20
+
+# # Validation & Settings
+# pydantic==2.11.7
+# pydantic-settings==2.10.1
+
+# # Database
+# sqlalchemy==2.0.41
+# psycopg2-binary==2.9.10
+# pgvector
+
+# # Auth
+# python-jose[cryptography]==3.3.0
+# pwdlib[argon2]
+
+# # PDF Processing
+# pymupdf==1.26.3
+# pymupdf4llm
+
+# # AI / RAG
+# langchain==0.3.27
+# langchain-community==0.3.27
+# langchain-text-splitters==0.3.9
+# langchain-groq
+
+# # Embeddings
+# sentence-transformers==5.0.0
+
+# # Cloud storage
+# boto3
+
+# # Utilities
+# numpy==2.3.1
+# python-dotenv==1.1.1
+# httpx==0.28.1
+# orjson==3.11.0
+
+# # Logging
+# loguru==0.7.3
