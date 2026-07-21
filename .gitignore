@@ -12,6 +12,7 @@ backend/__pycache__/
 backend/*.pyc
 backend/.env
 backend/dataset/
+backend/trial
 frontend/.vscode/mcp.json
 
 

@@ -13,6 +13,8 @@ import { File, LogOut, User} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
+
+
 const Side_bar = () => {
   
   const navigate = useNavigate()
@@ -22,7 +24,7 @@ const Side_bar = () => {
   useEffect(() => {
     const getProfile = async () => {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://127.0.0.1:8000/profile", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/profile`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });

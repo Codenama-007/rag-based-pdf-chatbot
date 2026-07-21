@@ -36,7 +36,7 @@ const Pdf_Reader = () => {
       const token = localStorage.getItem("token")
       const form_data = new FormData()
       form_data.append("pdf", file)
-      const response = await fetch("http://127.0.0.1:8000/get-pdf", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/get-pdf`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`
@@ -71,7 +71,7 @@ const Pdf_Reader = () => {
 
     try {
       const token = localStorage.getItem("token")
-      const response = await fetch("http://127.0.0.1:8000/pdf-chat", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/pdf-chat`, {
         method: "POST",
         headers: {
           "Content-type": "application/json",
