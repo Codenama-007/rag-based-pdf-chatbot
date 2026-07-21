@@ -42,7 +42,8 @@ def get_data_base():
 
 origins = [
     'http://localhost:5173',
-    'localhost:5173'
+    'localhost:5173' ,
+    'https://rag-based-pdf-chatbot.netlify.app/'
 ]
 
 app.add_middleware(
